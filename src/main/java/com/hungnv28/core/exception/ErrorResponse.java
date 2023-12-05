@@ -1,4 +1,4 @@
-package com.hungnv28.core.exception.core;
+package com.hungnv28.core.exception;
 
 import com.hungnv28.core.base.BaseResponse;
 import lombok.NoArgsConstructor;
