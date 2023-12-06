@@ -2,6 +2,8 @@ package com.hungnv28.core.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
@@ -11,6 +13,10 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+
+import java.io.IOException;
+import java.util.Properties;
 
 @Slf4j
 @Configuration
@@ -49,5 +55,22 @@ public class DatabaseConfig {
         dataSource.setConnectionTestQuery("SELECT 1 FROM DUAL");
 
         return dataSource;
+    }
+
+    public SessionFactory getSessionFactory(@Qualifier("coreSource") HikariDataSource dataSource) throws IOException {
+        Properties properties = new Properties();
+        properties.put("hibernate.show_sql", "false");
+        properties.put("hibernate.temp.use_jdbc_metadata_defaults", false);
+        properties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+        properties.put("current_session_context_class", "org.springframework.orm.hibernate5.SpringSessionContext");
+
+        LocalSessionFactoryBean factoryBean = new LocalSessionFactoryBean();
+        factoryBean.setHibernateProperties(properties);
+        factoryBean.setDataSource(dataSource);
+        factoryBean.afterPropertiesSet();
+
+        SessionFactory sessionFactory = factoryBean.getObject();
+        log.info("## getSessionFactory: {}", sessionFactory);
+        return sessionFactory;
     }
 }

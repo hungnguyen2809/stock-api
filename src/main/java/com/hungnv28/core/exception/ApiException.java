@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class ApiException extends Exception {
     protected String code;
     protected String stack;
@@ -16,12 +17,13 @@ public class ApiException extends Exception {
 
     public ApiException(String message) {
         this.message = message;
-        this.code = HttpStatus.INTERNAL_SERVER_ERROR.toString();
+        this.status = HttpStatus.INTERNAL_SERVER_ERROR;
     }
 
     public ApiException(String message, String code) {
         this.code = code;
         this.message = message;
-        this.code = HttpStatus.INTERNAL_SERVER_ERROR.toString();
+        this.status = HttpStatus.INTERNAL_SERVER_ERROR;
     }
+
 }
