@@ -6,7 +6,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum CodeException {
-    SERVER_ERROR("error_server");
+    SERVER_ERROR("error_server"),
+    TOKEN_EXPIRES("token_expires");
 
     private final String value;
 }

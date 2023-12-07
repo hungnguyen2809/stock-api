@@ -55,13 +55,14 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     }
 
     private boolean hasJwtToken(HttpServletRequest request) {
-        String header = getHeader(request);
-        return header != null;
+        String authHeader = getHeader(request);
+        return authHeader != null;
     }
 
     private UserInfo validateToken(HttpServletRequest request) {
         String token = getHeader(request);
-        token = token.replace(BEARER, "");
+        token = token.replace(BEARER, "").replace(BEARER.toLowerCase(), "").replace(BEARER.toUpperCase(), "");
+
         return JwtTokenUtil.verifyToken(token);
     }
 }
