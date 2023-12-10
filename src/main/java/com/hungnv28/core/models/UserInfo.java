@@ -18,11 +18,15 @@ public class UserInfo implements Serializable {
 
     public boolean verify() {
         long exp = (long) info.getOrDefault(TokenField.exp.getValue(), 0);
-        return exp == 0 || exp > System.currentTimeMillis() / 1000;
+        return exp == 0 || exp > System.currentTimeMillis();
     }
 
     public Long getUserId() {
         return (Long) info.get(TokenField.userId.getValue());
+    }
+
+    public String getRole() {
+        return (String) info.get(TokenField.role.getValue());
     }
 
     public String getUsername() {

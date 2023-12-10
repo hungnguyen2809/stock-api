@@ -1,12 +1,15 @@
 package com.hungnv28.core.daos.impl;
 
 import com.hungnv28.core.base.BaseDAO;
+import com.hungnv28.core.controllers.AuthControler.request.AuthSignUpRequest;
 import com.hungnv28.core.daos.UserDAO;
 import com.hungnv28.core.entities.Users;
 import com.hungnv28.core.enums.RoleUser;
 import com.hungnv28.core.exception.ApiException;
+import com.hungnv28.core.utils.DateTimeFormatterUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.NativeQuery;
@@ -14,6 +17,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,12 +29,18 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
     @Qualifier("coreFactory")
     private final SessionFactory sessionFactory;
 
+    private RoleUser getRole(String role) {
+        if (role.equals(RoleUser.ADMIN.getValue())) {
+            return RoleUser.ADMIN;
+        }
+        return RoleUser.USER;
+    }
 
-    public Users checkUser(String username, String password) throws Exception {
+    public Users loginUser(String username, String password) throws Exception {
         Session session = null;
         try {
             session = sessionFactory.openSession();
-            NativeQuery query = session.createNativeQuery("CALL CHECK_LOGIN(:username, :password);", Object.class)
+            NativeQuery query = session.createNativeQuery("CALL ERD_STOCK.LOGIN_USER(:username, :password);", Object.class)
                     .setParameter("username", username)
                     .setParameter("password", password);
 
@@ -54,6 +64,23 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
             return !usersList.isEmpty() ? usersList.get(0) : null;
 
         } catch (Exception e) {
+            log.error("UserDAO_loginUser: {}", e.getMessage());
+            throw new ApiException(e.getMessage());
+        } finally {
+            commit(session, null);
+        }
+    }
+
+    @Override
+    public boolean checkUser(String username) throws Exception {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            NativeQuery query = session.createNativeQuery("CALL ERD_STOCK.CHECK_USER(:username);", Object.class)
+                    .setParameter("username", username);
+
+            return query.getResultList().isEmpty();
+        } catch (Exception e) {
             log.error("UserDAO_checkUser: {}", e.getMessage());
             throw new ApiException(e.getMessage());
         } finally {
@@ -61,10 +88,33 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
         }
     }
 
-    private RoleUser getRole(String role) {
-        if (role.equals(RoleUser.ADMIN.getValue())) {
-            return RoleUser.ADMIN;
+    @Override
+    public boolean registerUser(AuthSignUpRequest data) throws Exception {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+
+            String role = StringUtils.isEmpty(data.getRole()) ? RoleUser.USER.getValue() : data.getRole();
+            String dateOfBrith = DateTimeFormatterUtil.parseDate(data.getDateOfBrith(), DateTimeFormatterUtil.DDMMYYYY)
+                    .format(DateTimeFormatterUtil.YYYYMMDD);
+
+            NativeQuery query = session.createNativeQuery("CALL ERD_STOCK.REGISTER_USER(:username, :password, :fullName, :email, " +
+                            ":phone, :dateOfBirth, :country, :role);", Object.class)
+                    .setParameter("username", data.getUsername())
+                    .setParameter("password", data.getPassword())
+                    .setParameter("fullName", data.getFullName())
+                    .setParameter("email", data.getEmail())
+                    .setParameter("phone", data.getPhone())
+                    .setParameter("dateOfBirth", dateOfBrith)
+                    .setParameter("country", data.getCountry())
+                    .setParameter("role", role);
+
+            return !query.getResultList().isEmpty();
+        } catch (Exception e) {
+            log.error("UserDAO_registerUser: {}", e.getMessage());
+            throw new ApiException(e.getMessage());
+        } finally {
+            commit(session, null);
         }
-        return RoleUser.USER;
     }
 }

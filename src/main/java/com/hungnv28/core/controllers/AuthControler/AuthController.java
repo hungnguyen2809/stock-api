@@ -3,6 +3,7 @@ package com.hungnv28.core.controllers.AuthControler;
 import com.hungnv28.core.base.BaseController;
 import com.hungnv28.core.base.BaseResponse;
 import com.hungnv28.core.controllers.AuthControler.request.AuthSignInRequest;
+import com.hungnv28.core.controllers.AuthControler.request.AuthSignUpRequest;
 import com.hungnv28.core.controllers.AuthControler.response.SignInResponse;
 import com.hungnv28.core.entities.Users;
 import com.hungnv28.core.exception.ApiException;
@@ -28,7 +29,7 @@ public class AuthController extends BaseController {
     @PostMapping(value = "/sign-in")
     public ResponseEntity<BaseResponse> signIn(@RequestBody AuthSignInRequest body) {
         try {
-            Users users = userService.checkUser(body.getUsername(), body.getPassword());
+            Users users = userService.loginUser(body.getUsername(), body.getPassword());
             String token = JwtTokenUtil.generateToken(users, false);
             String refresh_token = JwtTokenUtil.generateToken(users, true);
 
@@ -38,6 +39,24 @@ public class AuthController extends BaseController {
             return errorApi(new ErrorResponse(exception));
         } catch (Exception exception) {
             log.error("AuthController_signIn: {}", exception.getMessage(), exception);
+            return errorApi(exception.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/sign-up")
+    public ResponseEntity<BaseResponse> signUp(@RequestBody AuthSignUpRequest body) {
+        try {
+            boolean result = userService.registerUser(body);
+            if (!result) {
+                return errorApi("Đăng ký tài khoản thất bại");
+            }
+
+            return successApi(null, "Đăng ký tài khoản thành công");
+        } catch (ApiException exception) {
+            log.error("AuthController_signUp: {}", exception.getMessage(), exception);
+            return errorApi(new ErrorResponse(exception));
+        } catch (Exception exception) {
+            log.error("AuthController_signUp: {}", exception.getMessage(), exception);
             return errorApi(exception.getMessage());
         }
     }

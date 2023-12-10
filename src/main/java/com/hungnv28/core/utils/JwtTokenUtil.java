@@ -49,6 +49,7 @@ public class JwtTokenUtil {
             claim.put(TokenField.iat.getValue(), iatDate);
             claim.put(TokenField.exp.getValue(), expDate);
 
+            claim.put(TokenField.role.getValue(), data.getRole());
             claim.put(TokenField.email.getValue(), data.getEmail());
             claim.put(TokenField.phone.getValue(), data.getPhone());
             claim.put(TokenField.userId.getValue(), data.getUserId());

@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UsersRepository extends JpaRepository<Users, Long> {
 
-    @Query(nativeQuery = true, value = "CALL CHECK_LOGIN(:username, :password);")
+    @Query(nativeQuery = true, value = "CALL LOGIN_USER(:username, :password);")
     public Users checkUser(@Param("username") String username, @Param("password") String password);
 }

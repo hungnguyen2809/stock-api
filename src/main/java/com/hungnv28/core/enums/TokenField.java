@@ -12,6 +12,7 @@ public enum TokenField {
     header_alg("alg"),
     header_typ("typ"),
 
+    role("role"),
     phone("phone"),
     email("email"),
     userId("user_id"),
