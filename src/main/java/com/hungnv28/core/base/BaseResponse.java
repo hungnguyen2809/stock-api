@@ -6,9 +6,9 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 public class BaseResponse {
-    protected int status;
-    protected Object data;
-    protected String code;
-    protected boolean error;
-    protected String message;
+    private int status;
+    private Object data;
+    private String code;
+    private boolean error;
+    private String message;
 }

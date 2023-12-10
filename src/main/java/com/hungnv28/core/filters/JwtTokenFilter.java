@@ -5,6 +5,7 @@ import com.hungnv28.core.utils.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,12 +57,16 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private boolean hasJwtToken(HttpServletRequest request) {
         String authHeader = getHeader(request);
-        return authHeader != null;
+        return StringUtils.isNotEmpty(authHeader);
     }
 
     private UserInfo validateToken(HttpServletRequest request) {
         String token = getHeader(request);
-        token = token.replace(BEARER, "").replace(BEARER.toLowerCase(), "").replace(BEARER.toUpperCase(), "");
+        token = token
+                .replace(BEARER, "")
+                .replace(BEARER.toLowerCase(), "")
+                .replace(BEARER.toUpperCase(), "")
+                .trim();
 
         return JwtTokenUtil.verifyToken(token);
     }

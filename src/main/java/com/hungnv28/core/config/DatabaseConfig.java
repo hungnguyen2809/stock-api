@@ -3,6 +3,7 @@ package com.hungnv28.core.config;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -16,6 +17,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Properties;
 
 @Slf4j
@@ -41,7 +43,7 @@ public class DatabaseConfig {
 
     @Primary
     @Bean(name = "coreSource", destroyMethod = "close")
-    public HikariDataSource getDataSource() {
+    public HikariDataSource getDataSource() throws SQLException {
         HikariDataSource dataSource = new HikariDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
         dataSource.setJdbcUrl(dbUrl);
@@ -50,6 +52,7 @@ public class DatabaseConfig {
         dataSource.setAutoCommit(true);
         dataSource.setMinimumIdle(8);
         dataSource.setMaximumPoolSize(64);
+        dataSource.setLoginTimeout(1000);
         dataSource.setConnectionTimeout(30000);
         dataSource.setConnectionInitSql("SELECT 1 FROM DUAL");
         dataSource.setConnectionTestQuery("SELECT 1 FROM DUAL");
@@ -57,6 +60,8 @@ public class DatabaseConfig {
         return dataSource;
     }
 
+    @Autowired
+    @Bean(name = "coreFactory")
     public SessionFactory getSessionFactory(@Qualifier("coreSource") HikariDataSource dataSource) throws IOException {
         Properties properties = new Properties();
         properties.put("hibernate.show_sql", "false");

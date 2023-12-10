@@ -6,9 +6,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ErrorResponse extends BaseResponse {
     public ErrorResponse(ApiException exception) {
-        this.error = true;
-        this.code = exception.getCode();
-        this.message = exception.getMessage();
-        this.status = exception.getStatus().value();
+        setError(true);
+        setCode(exception.getCode());
+        setMessage(exception.getMessage());
+        setStatus(exception.getStatus().value());
     }
 }

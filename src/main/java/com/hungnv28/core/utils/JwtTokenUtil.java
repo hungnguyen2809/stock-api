@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -32,43 +33,75 @@ import static jakarta.xml.bind.DatatypeConverter.parseBase64Binary;
 public class JwtTokenUtil {
     static Logger logger = LoggerFactory.getLogger(JwtTokenUtil.class);
 
-    public static String generateToken(TokenData data) throws Exception {
-        long iatDate = System.currentTimeMillis();
-        long expDate = System.currentTimeMillis() / 1000 + 3600 * 24;
+    public static String generateToken(TokenData data) {
+        try {
+            long iatDate = System.currentTimeMillis();
+            long expDate = System.currentTimeMillis() / 1000 + 3600 * 24;
 
-        Map<String, Object> claim = new HashMap<>();
-        claim.put(TokenField.iat.getValue(), iatDate);
-        claim.put(TokenField.exp.getValue(), expDate);
+            Map<String, Object> claim = new HashMap<>();
+            claim.put(TokenField.iat.getValue(), iatDate);
+            claim.put(TokenField.exp.getValue(), expDate);
 
-        claim.put(TokenField.email.getValue(), data.getEmail());
-        claim.put(TokenField.phone.getValue(), data.getEmail());
-        claim.put(TokenField.userId.getValue(), data.getEmail());
-        claim.put(TokenField.userName.getValue(), data.getEmail());
-        claim.put(TokenField.fullName.getValue(), data.getEmail());
+            claim.put(TokenField.email.getValue(), data.getEmail());
+            claim.put(TokenField.phone.getValue(), data.getPhone());
+            claim.put(TokenField.userId.getValue(), data.getUserId());
+            claim.put(TokenField.userName.getValue(), data.getUserName());
+            claim.put(TokenField.fullName.getValue(), data.getFullName());
 
-        Map<String, Object> header = new HashMap<>();
-        header.put(TokenField.header_alg.toString(), "RS256");
-        header.put(TokenField.header_typ.toString(), "JWT");
+            Map<String, Object> header = new HashMap<>();
+            header.put(TokenField.header_alg.toString(), "RS256");
+            header.put(TokenField.header_typ.toString(), "JWT");
 
-        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(parseBase64Binary(getKey("keys/stock_private.pem", true)));
-        KeyFactory factory = KeyFactory.getInstance("RSA");
-        PrivateKey privateKey = factory.generatePrivate(spec);
+            PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(parseBase64Binary(getKey("keys/stock_private.pem", true)));
+            KeyFactory factory = KeyFactory.getInstance("RSA");
+            PrivateKey privateKey = factory.generatePrivate(spec);
 
-        return Jwts.builder()
-                .setHeader(header)
-                .setClaims(claim)
-                .setSubject(data.getUserName())
-                .setIssuedAt(new Date(iatDate))
-                .setExpiration(new Date(expDate))
-                .signWith(SignatureAlgorithm.RS256, privateKey)
-                .compact();
+            return Jwts.builder()
+                    .setHeader(header)
+                    .setClaims(claim)
+                    .setSubject(data.getUserName())
+                    .setIssuedAt(new Date(iatDate))
+                    .setExpiration(new Date(expDate))
+                    .signWith(privateKey, SignatureAlgorithm.RS256)
+                    .compact();
+        } catch (Exception e) {
+            logger.error("Generate Token failed", e);
+            return null;
+        }
+    }
+
+    public static Claims getClaims(String token) {
+        try {
+            X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(parseBase64Binary(getKey("keys/stock_public.pem", false)));
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            PublicKey bobPubKey = keyFactory.generatePublic(publicKeySpec);
+
+            return Jwts.parserBuilder()
+                    .setSigningKey(bobPubKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+        } catch (ExpiredJwtException ex) {
+            logger.error("JWT expired {}", ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            logger.error("Token is null, empty or only whitespace {}", ex.getMessage());
+        } catch (MalformedJwtException ex) {
+            logger.error("JWT is invalid", ex);
+        } catch (UnsupportedJwtException ex) {
+            logger.error("JWT is not supported", ex);
+        } catch (Exception ex) {
+            logger.error("Signature validation failed", ex);
+        }
+
+        return null;
     }
 
     public static UserInfo verifyToken(String token) {
         if (token == null) return null;
 
         try {
-            X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(parseBase64Binary(getKey("keys/stock_private.pem", false)));
+            X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(parseBase64Binary(getKey("keys/stock_public.pem", false)));
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             RSAPublicKey bobPubKey = (RSAPublicKey) keyFactory.generatePublic(publicKeySpec);
             JWSVerifier verifier = new RSASSAVerifier(bobPubKey);
@@ -90,7 +123,7 @@ public class JwtTokenUtil {
         } catch (UnsupportedJwtException ex) {
             logger.error("JWT is not supported", ex);
         } catch (Exception ex) {
-            logger.error("Signature validation failed");
+            logger.error("Signature validation failed", ex);
         }
 
         return null;
