@@ -3,10 +3,12 @@ package com.hungnv28.core.controllers.AuthControler;
 import com.hungnv28.core.base.BaseController;
 import com.hungnv28.core.base.BaseResponse;
 import com.hungnv28.core.controllers.AuthControler.request.AuthSignInRequest;
+import com.hungnv28.core.controllers.AuthControler.response.SignInResponse;
 import com.hungnv28.core.entities.Users;
 import com.hungnv28.core.exception.ApiException;
 import com.hungnv28.core.exception.ErrorResponse;
 import com.hungnv28.core.services.UserService;
+import com.hungnv28.core.utils.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +29,10 @@ public class AuthController extends BaseController {
     public ResponseEntity<BaseResponse> signIn(@RequestBody AuthSignInRequest body) {
         try {
             Users users = userService.checkUser(body.getUsername(), body.getPassword());
-            return successApi(users);
+            String token = JwtTokenUtil.generateToken(users, false);
+            String refresh_token = JwtTokenUtil.generateToken(users, true);
+
+            return successApi(new SignInResponse(users, token, refresh_token));
         } catch (ApiException exception) {
             log.error("AuthController_signIn: {}", exception.getMessage(), exception);
             return errorApi(new ErrorResponse(exception));

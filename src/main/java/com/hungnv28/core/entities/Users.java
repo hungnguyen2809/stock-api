@@ -2,19 +2,14 @@ package com.hungnv28.core.entities;
 
 import com.hungnv28.core.enums.RoleUser;
 import jakarta.persistence.*;
-import lombok.Data;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import lombok.*;
 
-import java.sql.Date;
-import java.util.Collection;
-import java.util.List;
+import java.sql.Timestamp;
 
 @Data
 @Entity
 @Table(name = "USERS")
-public class Users implements UserDetails {
+public class Users {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,36 +32,11 @@ public class Users implements UserDetails {
     private String phone;
 
     @Column(name = "DATE_OF_BIRTH")
-    private Date dateOfBirth;
+    private Timestamp dateOfBirth;
 
     @Column(name = "COUNTRY")
     private String country;
 
     @Column(name = "ROLE")
     private RoleUser role;
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.getValue()));
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
 }

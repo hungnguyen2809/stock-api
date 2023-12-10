@@ -3,7 +3,6 @@ package com.hungnv28.core.services.impl;
 import com.hungnv28.core.daos.UserDAO;
 import com.hungnv28.core.entities.Users;
 import com.hungnv28.core.exception.ApiException;
-import com.hungnv28.core.repositories.UsersRepository;
 import com.hungnv28.core.services.UserService;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     private final UserDAO userDAO;
-//    private final UsersRepository usersRepository;
 
     @Override
     public Users checkUser(String username, String password) throws Exception {
@@ -27,7 +25,11 @@ public class UserServiceImpl implements UserService {
             throw new ApiException("Mật khẩu không được trống", "password", HttpStatus.BAD_REQUEST);
         }
 
-        return userDAO.checkUser(username, password);
-//        return usersRepository.checkUser(username, password);
+        Users users = userDAO.checkUser(username, password);
+        if (users == null) {
+            throw new ApiException("Thông tin tài khoản hoặc mật khẩu không chính xác", "user_not_found", HttpStatus.NOT_FOUND);
+        }
+
+        return users;
     }
 }

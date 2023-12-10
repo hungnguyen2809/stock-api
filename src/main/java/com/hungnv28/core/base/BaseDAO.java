@@ -3,11 +3,13 @@ package com.hungnv28.core.base;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+@Transactional
 public class BaseDAO {
 
     protected Session getSession(SessionFactory sf) {

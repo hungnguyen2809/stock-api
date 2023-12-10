@@ -8,7 +8,6 @@ import lombok.Getter;
 public enum TokenField {
     iat("iat"),
     exp("exp"),
-    token("token"),
 
     header_alg("alg"),
     header_typ("typ"),

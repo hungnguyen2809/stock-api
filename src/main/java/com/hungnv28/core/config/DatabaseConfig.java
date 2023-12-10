@@ -25,8 +25,8 @@ import java.util.Properties;
 @EnableAutoConfiguration(exclude = {
         DataSourceAutoConfiguration.class,
         HibernateJpaAutoConfiguration.class,
-        DataSourceTransactionManagerAutoConfiguration.class,
-        JpaRepositoriesAutoConfiguration.class})
+        JpaRepositoriesAutoConfiguration.class,
+        DataSourceTransactionManagerAutoConfiguration.class})
 public class DatabaseConfig {
 
     @Value("${sys.database.url}")
@@ -53,7 +53,10 @@ public class DatabaseConfig {
         dataSource.setMinimumIdle(8);
         dataSource.setMaximumPoolSize(64);
         dataSource.setLoginTimeout(1000);
+        dataSource.setIdleTimeout(600000);
+        dataSource.setMaxLifetime(1800000);
         dataSource.setConnectionTimeout(30000);
+        dataSource.setInitializationFailTimeout(1000);
         dataSource.setConnectionInitSql("SELECT 1 FROM DUAL");
         dataSource.setConnectionTestQuery("SELECT 1 FROM DUAL");
 
