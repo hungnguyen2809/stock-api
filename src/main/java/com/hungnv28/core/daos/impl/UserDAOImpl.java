@@ -3,7 +3,7 @@ package com.hungnv28.core.daos.impl;
 import com.hungnv28.core.base.BaseDAO;
 import com.hungnv28.core.controllers.AuthControler.request.AuthSignUpRequest;
 import com.hungnv28.core.daos.UserDAO;
-import com.hungnv28.core.entities.Users;
+import com.hungnv28.core.entities.UsersEntity;
 import com.hungnv28.core.enums.RoleUser;
 import com.hungnv28.core.exception.ApiException;
 import com.hungnv28.core.utils.DateTimeFormatterUtil;
@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +35,7 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
         return RoleUser.USER;
     }
 
-    public Users loginUser(String username, String password) throws Exception {
+    public UsersEntity loginUser(String username, String password) throws Exception {
         Session session = null;
         try {
             session = sessionFactory.openSession();
@@ -45,10 +44,10 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
                     .setParameter("password", password);
 
             List<Object[]> objectList = query.getResultList();
-            List<Users> usersList = new ArrayList<>();
+            List<UsersEntity> usersList = new ArrayList<>();
 
             for (Object[] object : objectList) {
-                Users user = new Users();
+                UsersEntity user = new UsersEntity();
                 user.setUserId((Integer) object[0]);
                 user.setUsername((String) object[1]);
                 user.setFullName((String) object[3]);
@@ -112,6 +111,40 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
             return !query.getResultList().isEmpty();
         } catch (Exception e) {
             log.error("UserDAO_registerUser: {}", e.getMessage());
+            throw new ApiException(e.getMessage());
+        } finally {
+            commit(session, null);
+        }
+    }
+
+    @Override
+    public UsersEntity findUserById(Integer id) throws Exception {
+        Session session = null;
+        try {
+            session = sessionFactory.openSession();
+            NativeQuery query = session.createNativeQuery("SELECT * FROM ERD_STOCK.USERS WHERE USER_ID = ?;", Object.class)
+                    .setParameter(1, id);
+
+            List<Object[]> objectList = query.getResultList();
+            List<UsersEntity> usersList = new ArrayList<>();
+
+            for (Object[] object : objectList) {
+                UsersEntity user = new UsersEntity();
+                user.setUserId((Integer) object[0]);
+                user.setUsername((String) object[1]);
+                user.setFullName((String) object[3]);
+                user.setEmail((String) object[4]);
+                user.setPhone((String) object[5]);
+                user.setDateOfBirth((Timestamp) object[6]);
+                user.setCountry((String) object[7]);
+                user.setRole(getRole((String) object[8]));
+
+                usersList.add(user);
+            }
+
+            return !usersList.isEmpty() ? usersList.get(0) : null;
+        } catch (Exception e) {
+            log.error("UserDAO_findUserById: {}", e.getMessage());
             throw new ApiException(e.getMessage());
         } finally {
             commit(session, null);

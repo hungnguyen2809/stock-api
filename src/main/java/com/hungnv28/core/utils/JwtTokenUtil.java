@@ -1,6 +1,6 @@
 package com.hungnv28.core.utils;
 
-import com.hungnv28.core.entities.Users;
+import com.hungnv28.core.entities.UsersEntity;
 import com.hungnv28.core.enums.TokenField;
 import com.hungnv28.core.models.UserInfo;
 import com.nimbusds.jose.JWSVerifier;
@@ -21,7 +21,6 @@ import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,7 +34,7 @@ public class JwtTokenUtil {
         return (60 * 60) * hours;
     }
 
-    public static String generateToken(Users data, boolean isRefreshToken) {
+    public static String generateToken(UsersEntity data, boolean isRefreshToken) {
         try {
             int hours = isRefreshToken ? 48 : 24;
             long iatDate = System.currentTimeMillis();

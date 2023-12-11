@@ -70,7 +70,7 @@ public class DatabaseConfig {
         properties.put("hibernate.show_sql", "false");
         properties.put("hibernate.temp.use_jdbc_metadata_defaults", false);
         properties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-        properties.put("current_session_context_class", "org.springframework.orm.hibernate5.SpringSessionContext");
+        properties.put("hibernate.current_session_context_class", "org.springframework.orm.hibernate5.SpringSessionContext");
 
         LocalSessionFactoryBean factoryBean = new LocalSessionFactoryBean();
         factoryBean.setHibernateProperties(properties);

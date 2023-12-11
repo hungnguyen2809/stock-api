@@ -3,8 +3,13 @@ package com.hungnv28.core.models;
 import com.hungnv28.core.enums.TokenField;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -44,4 +49,10 @@ public class UserInfo implements Serializable {
     public Long getPhone() {
         return (Long) info.get(TokenField.phone.getValue());
     }
+
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (StringUtils.isEmpty(getRole())) return List.of();
+        return List.of(new SimpleGrantedAuthority(getRole()));
+    }
+
 }

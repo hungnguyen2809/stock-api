@@ -5,7 +5,7 @@ import com.hungnv28.core.base.BaseResponse;
 import com.hungnv28.core.controllers.AuthControler.request.AuthSignInRequest;
 import com.hungnv28.core.controllers.AuthControler.request.AuthSignUpRequest;
 import com.hungnv28.core.controllers.AuthControler.response.SignInResponse;
-import com.hungnv28.core.entities.Users;
+import com.hungnv28.core.entities.UsersEntity;
 import com.hungnv28.core.exception.ApiException;
 import com.hungnv28.core.exception.ErrorResponse;
 import com.hungnv28.core.services.UserService;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping(value = "/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController extends BaseController {
 
@@ -29,7 +29,7 @@ public class AuthController extends BaseController {
     @PostMapping(value = "/sign-in")
     public ResponseEntity<BaseResponse> signIn(@RequestBody AuthSignInRequest body) {
         try {
-            Users users = userService.loginUser(body.getUsername(), body.getPassword());
+            UsersEntity users = userService.loginUser(body.getUsername(), body.getPassword());
             String token = JwtTokenUtil.generateToken(users, false);
             String refresh_token = JwtTokenUtil.generateToken(users, true);
 

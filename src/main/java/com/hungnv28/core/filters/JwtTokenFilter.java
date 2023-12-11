@@ -43,9 +43,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
     }
 
-    private void setUpSpringAuthentication(UserInfo user) {
-        if (user != null) {
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user, null, List.of());
+    private void setUpSpringAuthentication(UserInfo userInfo) {
+        if (userInfo != null) {
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userInfo, null, userInfo.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(auth);
         } else {
             SecurityContextHolder.clearContext();

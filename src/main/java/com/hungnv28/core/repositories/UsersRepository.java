@@ -1,14 +1,14 @@
 package com.hungnv28.core.repositories;
 
-import com.hungnv28.core.entities.Users;
+import com.hungnv28.core.entities.UsersEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UsersRepository extends JpaRepository<Users, Long> {
+public interface UsersRepository extends JpaRepository<UsersEntity, Integer> {
 
-    @Query(nativeQuery = true, value = "CALL LOGIN_USER(:username, :password);")
-    public Users checkUser(@Param("username") String username, @Param("password") String password);
+    @Query(nativeQuery = true, value = "CALL ERD_STOCK.CHECK_USER(:username, :password);")
+    public UsersEntity checkUser(@Param("username") String username, @Param("password") String password);
 }
