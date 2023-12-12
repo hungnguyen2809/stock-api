@@ -1,10 +1,10 @@
-package com.hungnv28.core.controllers.AuthControler;
+package com.hungnv28.core.controllers;
 
 import com.hungnv28.core.base.BaseController;
 import com.hungnv28.core.base.BaseResponse;
-import com.hungnv28.core.controllers.AuthControler.request.AuthSignInRequest;
-import com.hungnv28.core.controllers.AuthControler.request.AuthSignUpRequest;
-import com.hungnv28.core.controllers.AuthControler.response.SignInResponse;
+import com.hungnv28.core.dtos.auth.SignInRequestDTO;
+import com.hungnv28.core.dtos.auth.SignUpRequestDTO;
+import com.hungnv28.core.dtos.auth.SignInResponseDTO;
 import com.hungnv28.core.entities.UsersEntity;
 import com.hungnv28.core.exception.ApiException;
 import com.hungnv28.core.exception.ErrorResponse;
@@ -27,13 +27,17 @@ public class AuthController extends BaseController {
     private final UserService userService;
 
     @PostMapping(value = "/sign-in")
-    public ResponseEntity<BaseResponse> signIn(@RequestBody AuthSignInRequest body) {
+    public ResponseEntity<BaseResponse> signIn(@RequestBody SignInRequestDTO body) {
         try {
             UsersEntity users = userService.loginUser(body.getUsername(), body.getPassword());
             String token = JwtTokenUtil.generateToken(users, false);
-            String refresh_token = JwtTokenUtil.generateToken(users, true);
+            String refreshToken = JwtTokenUtil.generateToken(users, true);
 
-            return successApi(new SignInResponse(users, token, refresh_token));
+            return successApi(SignInResponseDTO.builder()
+                    .userInfo(users)
+                    .token(token)
+                    .refreshToken(refreshToken)
+                    .build());
         } catch (ApiException exception) {
             log.error("AuthController_signIn: {}", exception.getMessage(), exception);
             return errorApi(new ErrorResponse(exception));
@@ -44,7 +48,7 @@ public class AuthController extends BaseController {
     }
 
     @PostMapping(value = "/sign-up")
-    public ResponseEntity<BaseResponse> signUp(@RequestBody AuthSignUpRequest body) {
+    public ResponseEntity<BaseResponse> signUp(@RequestBody SignUpRequestDTO body) {
         try {
             boolean result = userService.registerUser(body);
             if (!result) {

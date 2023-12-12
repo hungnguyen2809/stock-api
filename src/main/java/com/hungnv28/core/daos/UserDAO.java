@@ -1,6 +1,6 @@
 package com.hungnv28.core.daos;
 
-import com.hungnv28.core.controllers.AuthControler.request.AuthSignUpRequest;
+import com.hungnv28.core.dtos.auth.SignUpRequestDTO;
 import com.hungnv28.core.entities.UsersEntity;
 
 public interface UserDAO {
@@ -8,7 +8,7 @@ public interface UserDAO {
 
     public boolean checkUser(String username) throws Exception;
 
-    public boolean registerUser(AuthSignUpRequest data) throws Exception;
+    public boolean registerUser(SignUpRequestDTO data) throws Exception;
 
     public UsersEntity findUserById(Integer id) throws Exception;
 }

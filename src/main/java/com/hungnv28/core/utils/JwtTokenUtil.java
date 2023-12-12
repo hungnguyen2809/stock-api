@@ -73,17 +73,16 @@ public class JwtTokenUtil {
     }
 
     public static Claims getClaims(String token) {
+        if (token == null) return null;
+
         try {
             X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(parseBase64Binary(getKey("keys/stock_public_key.pem", false)));
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            PublicKey bobPubKey = keyFactory.generatePublic(publicKeySpec);
+            PublicKey publicKey = keyFactory.generatePublic(publicKeySpec);
 
-            return Jwts.parserBuilder()
-                    .setSigningKey(bobPubKey)
-                    .build()
+            return Jwts.parserBuilder().setSigningKey(publicKey).build()
                     .parseClaimsJws(token)
                     .getBody();
-
         } catch (ExpiredJwtException ex) {
             logger.error("JWT expired {}", ex.getMessage());
         } catch (IllegalArgumentException ex) {

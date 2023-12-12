@@ -52,7 +52,7 @@ public class UserInfo implements Serializable {
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (StringUtils.isEmpty(getRole())) return List.of();
-        return List.of(new SimpleGrantedAuthority(getRole()));
+        return List.of(new SimpleGrantedAuthority(getRole().toUpperCase()));
     }
 
 }

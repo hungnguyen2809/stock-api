@@ -1,4 +1,4 @@
-package com.hungnv28.core.controllers.UserController;
+package com.hungnv28.core.controllers;
 
 import com.hungnv28.core.base.BaseController;
 import com.hungnv28.core.base.BaseResponse;

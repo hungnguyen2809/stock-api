@@ -1,7 +1,7 @@
 package com.hungnv28.core.daos.impl;
 
 import com.hungnv28.core.base.BaseDAO;
-import com.hungnv28.core.controllers.AuthControler.request.AuthSignUpRequest;
+import com.hungnv28.core.dtos.auth.SignUpRequestDTO;
 import com.hungnv28.core.daos.UserDAO;
 import com.hungnv28.core.entities.UsersEntity;
 import com.hungnv28.core.enums.RoleUser;
@@ -61,7 +61,6 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
             }
 
             return !usersList.isEmpty() ? usersList.get(0) : null;
-
         } catch (Exception e) {
             log.error("UserDAO_loginUser: {}", e.getMessage());
             throw new ApiException(e.getMessage());
@@ -88,7 +87,7 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
     }
 
     @Override
-    public boolean registerUser(AuthSignUpRequest data) throws Exception {
+    public boolean registerUser(SignUpRequestDTO data) throws Exception {
         Session session = null;
         try {
             session = sessionFactory.openSession();

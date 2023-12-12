@@ -1,11 +1,11 @@
-package com.hungnv28.core.controllers.AuthControler.request;
+package com.hungnv28.core.dtos.auth;
 
 import lombok.Data;
 
 import java.io.Serializable;
 
 @Data
-public class AuthSignInRequest implements Serializable {
+public class SignInRequestDTO implements Serializable {
     private String username;
     private String password;
 }
