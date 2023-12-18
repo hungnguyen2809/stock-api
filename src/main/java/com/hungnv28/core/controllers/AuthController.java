@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "/api/v1/auth")
 @RequiredArgsConstructor
+@RequestMapping(value = "${sys.api.v1}/auth")
 public class AuthController extends BaseController {
 
     private final UserService userService;

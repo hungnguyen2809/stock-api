@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "/api/v1/user")
 @RequiredArgsConstructor
+@RequestMapping(value = "${sys.api.v1}/user")
 public class UserController extends BaseController {
 
     private final UserService userService;
@@ -35,5 +35,4 @@ public class UserController extends BaseController {
             return errorApi(exception.getMessage());
         }
     }
-
 }
