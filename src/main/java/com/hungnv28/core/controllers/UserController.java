@@ -19,10 +19,10 @@ public class UserController extends BaseController {
 
     private final UserService userService;
 
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<BaseResponse> getUserById(@PathVariable String id) {
+    @GetMapping(value = "/{userId}")
+    public ResponseEntity<BaseResponse> getUserById(@PathVariable String userId) {
         try {
-            UsersEntity users = userService.findUserById(id, getCurrentUser());
+            UsersEntity users = userService.findUserById(userId, getCurrentUser());
             return successApi(users);
         } catch (ApiException exception) {
             log.error("UserController_getUserById: {}", exception.getMessage(), exception);

@@ -28,17 +28,9 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
     @Qualifier("coreFactory")
     private final SessionFactory sessionFactory;
 
-    private RoleUser getRole(String role) {
-        if (role.equals(RoleUser.ADMIN.getValue())) {
-            return RoleUser.ADMIN;
-        }
-        return RoleUser.USER;
-    }
-
     public UsersEntity loginUser(String username, String password) throws Exception {
-        Session session = null;
         try {
-            session = sessionFactory.openSession();
+            Session session = getSession(sessionFactory);
             NativeQuery query = session.createNativeQuery("CALL ERD_STOCK.LOGIN_USER(:username, :password);", Object.class)
                     .setParameter("username", username)
                     .setParameter("password", password);
@@ -55,7 +47,7 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
                 user.setPhone((String) object[5]);
                 user.setDateOfBirth((Timestamp) object[6]);
                 user.setCountry((String) object[7]);
-                user.setRole(getRole((String) object[8]));
+                user.setRole((String) object[8]);
 
                 usersList.add(user);
             }
@@ -64,16 +56,13 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
         } catch (Exception e) {
             log.error("UserDAO_loginUser: {}", e.getMessage());
             throw new ApiException(e.getMessage());
-        } finally {
-            commit(session, null);
         }
     }
 
     @Override
     public boolean checkUser(String username) throws Exception {
-        Session session = null;
         try {
-            session = sessionFactory.openSession();
+            Session session = getSession(sessionFactory);
             NativeQuery query = session.createNativeQuery("CALL ERD_STOCK.CHECK_USER(:username);", Object.class)
                     .setParameter("username", username);
 
@@ -81,21 +70,17 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
         } catch (Exception e) {
             log.error("UserDAO_checkUser: {}", e.getMessage());
             throw new ApiException(e.getMessage());
-        } finally {
-            commit(session, null);
         }
     }
 
     @Override
     public boolean registerUser(SignUpRequestDTO data) throws Exception {
-        Session session = null;
         try {
-            session = sessionFactory.openSession();
-
             String role = StringUtils.isEmpty(data.getRole()) ? RoleUser.USER.getValue() : data.getRole();
             String dateOfBrith = DateTimeFormatterUtil.parseDate(data.getDateOfBrith(), DateTimeFormatterUtil.DDMMYYYY)
                     .format(DateTimeFormatterUtil.YYYYMMDD);
 
+            Session session = getSession(sessionFactory);
             NativeQuery query = session.createNativeQuery("CALL ERD_STOCK.REGISTER_USER(:username, :password, :fullName, :email, " +
                             ":phone, :dateOfBirth, :country, :role);", Object.class)
                     .setParameter("username", data.getUsername())
@@ -111,16 +96,14 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
         } catch (Exception e) {
             log.error("UserDAO_registerUser: {}", e.getMessage());
             throw new ApiException(e.getMessage());
-        } finally {
-            commit(session, null);
         }
     }
 
     @Override
     public UsersEntity findUserById(Integer id) throws Exception {
-        Session session = null;
+
         try {
-            session = sessionFactory.openSession();
+            Session session = getSession(sessionFactory);
             NativeQuery query = session.createNativeQuery("SELECT * FROM ERD_STOCK.USERS WHERE USER_ID = ?;", Object.class)
                     .setParameter(1, id);
 
@@ -136,7 +119,7 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
                 user.setPhone((String) object[5]);
                 user.setDateOfBirth((Timestamp) object[6]);
                 user.setCountry((String) object[7]);
-                user.setRole(getRole((String) object[8]));
+                user.setRole((String) object[8]);
 
                 usersList.add(user);
             }
@@ -145,8 +128,6 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
         } catch (Exception e) {
             log.error("UserDAO_findUserById: {}", e.getMessage());
             throw new ApiException(e.getMessage());
-        } finally {
-            commit(session, null);
         }
     }
 }

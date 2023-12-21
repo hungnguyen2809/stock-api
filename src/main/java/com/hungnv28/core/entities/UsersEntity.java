@@ -1,8 +1,7 @@
 package com.hungnv28.core.entities;
 
-import com.hungnv28.core.enums.RoleUser;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
 
 import java.sql.Timestamp;
 
@@ -38,5 +37,5 @@ public class UsersEntity {
     private String country;
 
     @Column(name = "ROLE")
-    private RoleUser role;
+    private String role;
 }

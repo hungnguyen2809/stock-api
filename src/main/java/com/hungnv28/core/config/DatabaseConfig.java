@@ -3,7 +3,6 @@ package com.hungnv28.core.config;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -14,8 +13,11 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -26,7 +28,8 @@ import java.util.Properties;
         DataSourceAutoConfiguration.class,
         HibernateJpaAutoConfiguration.class,
         JpaRepositoriesAutoConfiguration.class,
-        DataSourceTransactionManagerAutoConfiguration.class})
+        DataSourceTransactionManagerAutoConfiguration.class,
+})
 public class DatabaseConfig {
 
     @Value("${sys.database.url}")
@@ -61,9 +64,9 @@ public class DatabaseConfig {
         return dataSource;
     }
 
-    @Autowired
+    @Primary
     @Bean(name = "coreFactory")
-    public SessionFactory sessionFactory(@Qualifier("coreSource") HikariDataSource dataSource) throws IOException {
+    public SessionFactory getSessionFactory(@Qualifier("coreSource") DataSource dataSource) throws IOException {
         Properties properties = new Properties();
         properties.put("hibernate.show_sql", "false");
         properties.put("hibernate.temp.use_jdbc_metadata_defaults", false);
@@ -78,5 +81,20 @@ public class DatabaseConfig {
         SessionFactory sessionFactory = factoryBean.getObject();
         log.info("DatabaseConfig_sessionFactory: {}", sessionFactory);
         return sessionFactory;
+    }
+
+    @Primary
+    @Bean(name = "coreTransactionManager")
+    public HibernateTransactionManager getTransactionManager(@Qualifier("coreFactory") SessionFactory sessionFactory) {
+        HibernateTransactionManager transactionManager = new HibernateTransactionManager(sessionFactory);
+        transactionManager.afterPropertiesSet();
+        return transactionManager;
+    }
+
+    @Bean(name = "coreJdbcTemplate")
+    public JdbcTemplate getJdbcTemplate(@Qualifier("coreSource") DataSource dataSource) {
+        JdbcTemplate template = new JdbcTemplate(dataSource);
+        template.setResultsMapCaseInsensitive(true);
+        return template;
     }
 }
