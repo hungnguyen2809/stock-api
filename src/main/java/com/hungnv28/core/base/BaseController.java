@@ -21,7 +21,7 @@ public class BaseController {
                 info = (UserInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             }
         } catch (Exception e) {
-            logger.error(e.getLocalizedMessage(), e);
+            logger.error("BaseController_getCurrentUser: {}", e.getMessage());
         }
 
         if (info == null || info.getUserId() == null || !info.verify()) {

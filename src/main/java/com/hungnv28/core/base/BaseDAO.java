@@ -25,16 +25,14 @@ public class BaseDAO {
             if (transaction != null) {
                 transaction.commit();
             }
-        } catch (Exception e) {
-            //TODO ignored
+        } catch (Exception ignored) {
         }
 
         try {
             if (session != null) {
                 session.close();
             }
-        } catch (Exception e) {
-            //TODO ignored
+        } catch (Exception ignored) {
         }
     }
 }

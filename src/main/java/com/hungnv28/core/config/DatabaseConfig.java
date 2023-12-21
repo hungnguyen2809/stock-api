@@ -51,34 +51,33 @@ public class DatabaseConfig {
         dataSource.setPassword(dbPassword);
         dataSource.setAutoCommit(true);
         dataSource.setMinimumIdle(8);
-        dataSource.setMaximumPoolSize(64);
+        dataSource.setMaximumPoolSize(16);
         dataSource.setLoginTimeout(1000);
-        dataSource.setIdleTimeout(600000);
-        dataSource.setMaxLifetime(1800000);
+        dataSource.setIdleTimeout(300000);
+        dataSource.setMaxLifetime(600000);
         dataSource.setConnectionTimeout(30000);
         dataSource.setInitializationFailTimeout(1000);
-        dataSource.setConnectionInitSql("SELECT 1 FROM DUAL");
-        dataSource.setConnectionTestQuery("SELECT 1 FROM DUAL");
 
         return dataSource;
     }
 
     @Autowired
     @Bean(name = "coreFactory")
-    public SessionFactory getSessionFactory(@Qualifier("coreSource") HikariDataSource dataSource) throws IOException {
+    public SessionFactory sessionFactory(@Qualifier("coreSource") HikariDataSource dataSource) throws IOException {
         Properties properties = new Properties();
-        properties.put("hibernate.show_sql", "false");
+        properties.put("hibernate.show_sql", "true");
         properties.put("hibernate.temp.use_jdbc_metadata_defaults", false);
         properties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         properties.put("hibernate.current_session_context_class", "org.springframework.orm.hibernate5.SpringSessionContext");
 
         LocalSessionFactoryBean factoryBean = new LocalSessionFactoryBean();
+         factoryBean.setPackagesToScan("com.hungnv28.core.entities");
         factoryBean.setHibernateProperties(properties);
         factoryBean.setDataSource(dataSource);
         factoryBean.afterPropertiesSet();
 
         SessionFactory sessionFactory = factoryBean.getObject();
-        log.info("## getSessionFactory: {}", sessionFactory);
+        log.info("DatabaseConfig_sessionFactory: {}", sessionFactory);
         return sessionFactory;
     }
 }
