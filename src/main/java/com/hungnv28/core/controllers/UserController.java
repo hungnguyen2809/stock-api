@@ -5,7 +5,6 @@ import com.hungnv28.core.base.BaseResponse;
 import com.hungnv28.core.entities.UsersEntity;
 import com.hungnv28.core.exception.ApiException;
 import com.hungnv28.core.exception.ErrorResponse;
-import com.hungnv28.core.models.UserInfo;
 import com.hungnv28.core.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,9 +22,7 @@ public class UserController extends BaseController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<BaseResponse> getUserById(@PathVariable String id) {
         try {
-            UserInfo userInfo = getCurrentUser();
-            log.info(userInfo.getFullName());
-            UsersEntity users = userService.findUserById(id);
+            UsersEntity users = userService.findUserById(id, getCurrentUser());
             return successApi(users);
         } catch (ApiException exception) {
             log.error("UserController_getUserById: {}", exception.getMessage(), exception);

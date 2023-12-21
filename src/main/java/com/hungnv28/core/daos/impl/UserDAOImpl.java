@@ -14,14 +14,14 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.NativeQuery;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Component
+@Service
 @RequiredArgsConstructor
 public class UserDAOImpl extends BaseDAO implements UserDAO {
 

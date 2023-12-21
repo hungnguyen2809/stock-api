@@ -65,13 +65,12 @@ public class DatabaseConfig {
     @Bean(name = "coreFactory")
     public SessionFactory sessionFactory(@Qualifier("coreSource") HikariDataSource dataSource) throws IOException {
         Properties properties = new Properties();
-        properties.put("hibernate.show_sql", "true");
+        properties.put("hibernate.show_sql", "false");
         properties.put("hibernate.temp.use_jdbc_metadata_defaults", false);
         properties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         properties.put("hibernate.current_session_context_class", "org.springframework.orm.hibernate5.SpringSessionContext");
 
         LocalSessionFactoryBean factoryBean = new LocalSessionFactoryBean();
-         factoryBean.setPackagesToScan("com.hungnv28.core.entities");
         factoryBean.setHibernateProperties(properties);
         factoryBean.setDataSource(dataSource);
         factoryBean.afterPropertiesSet();

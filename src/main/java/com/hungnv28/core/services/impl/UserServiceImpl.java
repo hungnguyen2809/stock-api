@@ -5,11 +5,11 @@ import com.hungnv28.core.daos.UserDAO;
 import com.hungnv28.core.entities.UsersEntity;
 import com.hungnv28.core.enums.RoleUser;
 import com.hungnv28.core.exception.ApiException;
+import com.hungnv28.core.models.UserInfo;
 import com.hungnv28.core.services.UserService;
 import com.hungnv28.core.utils.CommonUtils;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -23,16 +23,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public UsersEntity loginUser(String username, String password) throws Exception {
         if (StringUtils.isEmpty(username)) {
-            throw new ApiException("Tên tài khoản không được trống", "username", HttpStatus.BAD_REQUEST);
+            throw new ApiException("Tên tài khoản không được trống", "username");
         }
 
         if (StringUtils.isEmpty(password)) {
-            throw new ApiException("Mật khẩu không được trống", "password", HttpStatus.BAD_REQUEST);
+            throw new ApiException("Mật khẩu không được trống", "password");
         }
 
         UsersEntity users = userDAO.loginUser(username, password);
         if (users == null) {
-            throw new ApiException("Thông tin tài khoản hoặc mật khẩu không chính xác", "user_not_found", HttpStatus.NOT_FOUND);
+            throw new ApiException("Thông tin tài khoản hoặc mật khẩu không chính xác", "user_not_found");
         }
 
         return users;
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean checkUser(String username) throws Exception {
         if (StringUtils.isEmpty(username)) {
-            throw new ApiException("Tên tài khoản không được trống", "username", HttpStatus.BAD_REQUEST);
+            throw new ApiException("Tên tài khoản không được trống", "username");
         }
 
         return userDAO.checkUser(username);
@@ -50,39 +50,45 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean registerUser(SignUpRequestDTO data) throws Exception {
         if (StringUtils.isEmpty(data.getUsername())) {
-            throw new ApiException("Tên tài khoản không được trống", "username", HttpStatus.BAD_REQUEST);
+            throw new ApiException("Tên tài khoản không được trống", "username");
         }
 
         if (StringUtils.isEmpty(data.getPassword())) {
-            throw new ApiException("Mật kẩu không được trống", "password", HttpStatus.BAD_REQUEST);
+            throw new ApiException("Mật kẩu không được trống", "password");
         }
 
         if (StringUtils.isNotEmpty(data.getRole())) {
             if (Arrays.stream(RoleUser.values()).noneMatch((roleUser -> roleUser.getValue().equals(data.getRole()))))
-                throw new ApiException("Chức danh không hợp lệ", "password", HttpStatus.BAD_REQUEST);
+                throw new ApiException("Chức danh không hợp lệ", "password");
         }
 
         boolean checkUser = userDAO.checkUser(data.getUsername());
         if (!checkUser) {
-            throw new ApiException("Tên tài khoản đã tồn tại", "username", HttpStatus.BAD_REQUEST);
+            throw new ApiException("Tên tài khoản đã tồn tại", "username");
         }
 
         return userDAO.registerUser(data);
     }
 
     @Override
-    public UsersEntity findUserById(String id) throws Exception {
+    public UsersEntity findUserById(String id, UserInfo userInfo) throws Exception {
         if (StringUtils.isEmpty(id)) {
-            throw new ApiException("Id là bắt buộc", "user_id", HttpStatus.BAD_REQUEST);
+            throw new ApiException("Id là bắt buộc", "user_id");
         }
 
         if (!CommonUtils.isNumber(id)) {
-            throw new ApiException("Id phải là một số", "user_id", HttpStatus.BAD_REQUEST);
+            throw new ApiException("Id phải là một số", "user_id");
         }
 
-        UsersEntity users = userDAO.findUserById(Integer.parseInt(id));
+        int userId = Integer.parseInt(id);
+        UsersEntity users = userDAO.findUserById(userId);
+
         if (users == null) {
-            throw new ApiException("Không tìm thấy thông tin người dùng", "user_info", HttpStatus.NOT_FOUND);
+            throw new ApiException("Không tìm thấy thông tin người dùng", "user_info");
+        }
+
+        if (userId != userInfo.getUserId() && userInfo.getRole().equals(RoleUser.USER.getValue())) {
+            throw new ApiException("Bạn không thể thực hiện chức năng này", "error_403");
         }
 
         return users;

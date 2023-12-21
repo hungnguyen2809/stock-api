@@ -13,9 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/")
 public class HomeController extends BaseController {
 
-    @Autowired
-    UsersRepository usersRepository;
-
     @GetMapping("/")
     public ResponseEntity<BaseResponse> hello() {
         return successApi("Hello, My name is nvh28");

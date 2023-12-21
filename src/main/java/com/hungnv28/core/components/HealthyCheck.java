@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.net.InetAddress;
 
 @Component
-public class CustomHealthyCheck implements HealthIndicator {
+public class HealthyCheck implements HealthIndicator {
     @Override
     public Health getHealth(boolean includeDetails) {
         return HealthIndicator.super.getHealth(includeDetails);

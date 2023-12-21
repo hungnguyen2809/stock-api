@@ -17,14 +17,13 @@ public class ApiException extends Exception {
 
     public ApiException(String message) {
         this.message = message;
-        this.status = HttpStatus.INTERNAL_SERVER_ERROR;
-        this.code = CodeException.SERVER_ERROR.getValue();
+        this.status = HttpStatus.OK;
     }
 
     public ApiException(String message, String code) {
         this.code = code;
         this.message = message;
-        this.status = HttpStatus.INTERNAL_SERVER_ERROR;
+        this.status = HttpStatus.OK;
     }
 
     public ApiException(String message, String code, HttpStatus status) {
