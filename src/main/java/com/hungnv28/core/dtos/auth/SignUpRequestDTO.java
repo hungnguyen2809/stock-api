@@ -12,7 +12,7 @@ public class SignUpRequestDTO implements Serializable {
     private String email;
     private String phone;
     private String country;
-    private String dateOfBrith;
     private String role;
+    private String dateOfBrith;
 
 }

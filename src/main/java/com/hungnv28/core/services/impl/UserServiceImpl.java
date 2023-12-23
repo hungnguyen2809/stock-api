@@ -2,7 +2,7 @@ package com.hungnv28.core.services.impl;
 
 import com.hungnv28.core.dtos.auth.SignUpRequestDTO;
 import com.hungnv28.core.daos.UserDAO;
-import com.hungnv28.core.entities.UsersEntity;
+import com.hungnv28.core.dtos.user.UserInfoDTO;
 import com.hungnv28.core.enums.RoleUser;
 import com.hungnv28.core.exception.ApiException;
 import com.hungnv28.core.models.UserInfo;
@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
     private final UserDAO userDAO;
 
     @Override
-    public UsersEntity loginUser(String username, String password) throws Exception {
+    public UserInfoDTO loginUser(String username, String password) throws Exception {
         if (StringUtils.isEmpty(username)) {
             throw new ApiException("Tên tài khoản không được trống", "username");
         }
@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
             throw new ApiException("Mật khẩu không được trống", "password");
         }
 
-        UsersEntity users = userDAO.loginUser(username, password);
+        UserInfoDTO users = userDAO.loginUser(username, password);
         if (users == null) {
             throw new ApiException("Thông tin tài khoản hoặc mật khẩu không chính xác", "user_not_found");
         }
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UsersEntity findUserById(String id, UserInfo userInfo) throws Exception {
+    public UserInfoDTO findUserById(String id, UserInfo userInfo) throws Exception {
         if (StringUtils.isEmpty(id)) {
             throw new ApiException("Id là bắt buộc", "user_id");
         }
@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService {
         }
 
         int userId = Integer.parseInt(id);
-        UsersEntity users = userDAO.findUserById(userId);
+        UserInfoDTO users = userDAO.findUserById(userId);
 
         if (users == null) {
             throw new ApiException("Không tìm thấy thông tin người dùng", "user_info");

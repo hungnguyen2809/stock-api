@@ -3,7 +3,7 @@ package com.hungnv28.core.daos.impl;
 import com.hungnv28.core.base.BaseDAO;
 import com.hungnv28.core.dtos.auth.SignUpRequestDTO;
 import com.hungnv28.core.daos.UserDAO;
-import com.hungnv28.core.entities.UsersEntity;
+import com.hungnv28.core.dtos.user.UserInfoDTO;
 import com.hungnv28.core.enums.RoleUser;
 import com.hungnv28.core.exception.ApiException;
 import com.hungnv28.core.utils.DateTimeFormatterUtil;
@@ -28,24 +28,26 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
     @Qualifier("coreFactory")
     private final SessionFactory sessionFactory;
 
-    public UsersEntity loginUser(String username, String password) throws Exception {
+    public UserInfoDTO loginUser(String username, String password) throws Exception {
         try {
             Session session = getSession(sessionFactory);
-            NativeQuery query = session.createNativeQuery("CALL ERD_STOCK.LOGIN_USER(:username, :password);", Object.class)
+            NativeQuery query = session.createNativeQuery("CALL ERD_STOCK.LOGIN_USER(:username, :password)", Object.class)
                     .setParameter("username", username)
                     .setParameter("password", password);
 
-            List<Object[]> objectList = query.getResultList();
-            List<UsersEntity> usersList = new ArrayList<>();
+            List<Object[]> resultList = query.getResultList();
+            List<UserInfoDTO> usersList = new ArrayList<>();
 
-            for (Object[] object : objectList) {
-                UsersEntity user = new UsersEntity();
+            for (Object[] object : resultList) {
+                String dateOfBrith = DateTimeFormatterUtil.formatTimestamp((Timestamp) object[6], DateTimeFormatterUtil.DDMMYYYY);
+
+                UserInfoDTO user = new UserInfoDTO();
                 user.setUserId((Integer) object[0]);
                 user.setUsername((String) object[1]);
                 user.setFullName((String) object[3]);
                 user.setEmail((String) object[4]);
                 user.setPhone((String) object[5]);
-                user.setDateOfBirth((Timestamp) object[6]);
+                user.setDateOfBirth(dateOfBrith);
                 user.setCountry((String) object[7]);
                 user.setRole((String) object[8]);
 
@@ -63,7 +65,7 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
     public boolean checkUser(String username) throws Exception {
         try {
             Session session = getSession(sessionFactory);
-            NativeQuery query = session.createNativeQuery("CALL ERD_STOCK.CHECK_USER(:username);", Object.class)
+            NativeQuery query = session.createNativeQuery("CALL ERD_STOCK.CHECK_USER(:username)", Object.class)
                     .setParameter("username", username);
 
             return query.getResultList().isEmpty();
@@ -82,7 +84,7 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
 
             Session session = getSession(sessionFactory);
             NativeQuery query = session.createNativeQuery("CALL ERD_STOCK.REGISTER_USER(:username, :password, :fullName, :email, " +
-                            ":phone, :dateOfBirth, :country, :role);", Object.class)
+                            ":phone, :dateOfBirth, :country, :role)", Object.class)
                     .setParameter("username", data.getUsername())
                     .setParameter("password", data.getPassword())
                     .setParameter("fullName", data.getFullName())
@@ -100,24 +102,26 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
     }
 
     @Override
-    public UsersEntity findUserById(Integer id) throws Exception {
+    public UserInfoDTO findUserById(Integer id) throws Exception {
 
         try {
             Session session = getSession(sessionFactory);
-            NativeQuery query = session.createNativeQuery("SELECT * FROM ERD_STOCK.USERS WHERE USER_ID = ?;", Object.class)
+            NativeQuery query = session.createNativeQuery("SELECT * FROM ERD_STOCK.USERS WHERE USER_ID = ?", Object.class)
                     .setParameter(1, id);
 
-            List<Object[]> objectList = query.getResultList();
-            List<UsersEntity> usersList = new ArrayList<>();
+            List<Object[]> resultList = query.getResultList();
+            List<UserInfoDTO> usersList = new ArrayList<>();
 
-            for (Object[] object : objectList) {
-                UsersEntity user = new UsersEntity();
+            for (Object[] object : resultList) {
+                String dateOfBrith = DateTimeFormatterUtil.formatTimestamp((Timestamp) object[6], DateTimeFormatterUtil.DDMMYYYY);
+
+                UserInfoDTO user = new UserInfoDTO();
                 user.setUserId((Integer) object[0]);
                 user.setUsername((String) object[1]);
                 user.setFullName((String) object[3]);
                 user.setEmail((String) object[4]);
                 user.setPhone((String) object[5]);
-                user.setDateOfBirth((Timestamp) object[6]);
+                user.setDateOfBirth(dateOfBrith);
                 user.setCountry((String) object[7]);
                 user.setRole((String) object[8]);
 

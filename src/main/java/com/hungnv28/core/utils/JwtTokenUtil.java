@@ -1,8 +1,8 @@
 package com.hungnv28.core.utils;
 
-import com.hungnv28.core.entities.UsersEntity;
 import com.hungnv28.core.enums.TokenField;
 import com.hungnv28.core.models.UserInfo;
+import com.hungnv28.core.models.UserToken;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jwt.SignedJWT;
@@ -34,7 +34,7 @@ public class JwtTokenUtil {
         return (60 * 60) * hours;
     }
 
-    public static String generateToken(UsersEntity data, boolean isRefreshToken) {
+    public static String generateToken(UserToken data, boolean isRefreshToken) {
         try {
             int hours = isRefreshToken ? 48 : 24;
             long iatDate = System.currentTimeMillis();
@@ -67,7 +67,7 @@ public class JwtTokenUtil {
                     .signWith(privateKey, SignatureAlgorithm.RS256)
                     .compact();
         } catch (Exception e) {
-            logger.error("Generate Token failed", e);
+            logger.error("Generate Token failed: {}", e.getMessage());
             return null;
         }
     }
@@ -83,16 +83,8 @@ public class JwtTokenUtil {
             return Jwts.parserBuilder().setSigningKey(publicKey).build()
                     .parseClaimsJws(token)
                     .getBody();
-        } catch (ExpiredJwtException ex) {
-            logger.error("JWT expired {}", ex.getMessage());
-        } catch (IllegalArgumentException ex) {
-            logger.error("Token is null, empty or only whitespace {}", ex.getMessage());
-        } catch (MalformedJwtException ex) {
-            logger.error("JWT is invalid", ex);
-        } catch (UnsupportedJwtException ex) {
-            logger.error("JWT is not supported", ex);
         } catch (Exception ex) {
-            logger.error("Signature validation failed", ex);
+            logger.error("Signature validation failed: {}", ex.getMessage());
         }
 
         return null;
@@ -115,16 +107,8 @@ public class JwtTokenUtil {
                     return userInfo;
                 }
             }
-        } catch (ExpiredJwtException ex) {
-            logger.error("JWT expired {}", ex.getMessage());
-        } catch (IllegalArgumentException ex) {
-            logger.error("Token is null, empty or only whitespace {}", ex.getMessage());
-        } catch (MalformedJwtException ex) {
-            logger.error("JWT is invalid", ex);
-        } catch (UnsupportedJwtException ex) {
-            logger.error("JWT is not supported", ex);
         } catch (Exception ex) {
-            logger.error("Signature validation failed", ex);
+            logger.error("Signature validation failed: {}", ex.getMessage());
         }
 
         return null;
