@@ -1,11 +1,11 @@
-package com.hungnv28.core.dtos.auth;
+package com.hungnv28.core.controllers.request;
 
 import lombok.Data;
 
 import java.io.Serializable;
 
 @Data
-public class SignUpRequestDTO implements Serializable {
+public class SignUpRequest implements Serializable {
     private String username;
     private String password;
     private String fullName;
@@ -14,5 +14,4 @@ public class SignUpRequestDTO implements Serializable {
     private String country;
     private String role;
     private String dateOfBrith;
-
 }

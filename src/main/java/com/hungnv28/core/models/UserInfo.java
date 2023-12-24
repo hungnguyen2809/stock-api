@@ -46,8 +46,8 @@ public class UserInfo implements Serializable {
         return (String) info.get(TokenField.email.getValue());
     }
 
-    public Long getPhone() {
-        return (Long) info.get(TokenField.phone.getValue());
+    public String getPhone() {
+        return (String) info.get(TokenField.phone.getValue());
     }
 
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,8 +1,8 @@
 package com.hungnv28.core.services.impl;
 
-import com.hungnv28.core.dtos.auth.SignUpRequestDTO;
+import com.hungnv28.core.controllers.request.SignUpRequest;
 import com.hungnv28.core.daos.UserDAO;
-import com.hungnv28.core.dtos.user.UserInfoDTO;
+import com.hungnv28.core.dtos.UserInfoDTO;
 import com.hungnv28.core.enums.RoleUser;
 import com.hungnv28.core.exception.ApiException;
 import com.hungnv28.core.models.UserInfo;
@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean registerUser(SignUpRequestDTO data) throws Exception {
+    public boolean registerUser(SignUpRequest data) throws Exception {
         if (StringUtils.isEmpty(data.getUsername())) {
             throw new ApiException("Tên tài khoản không được trống", "username");
         }

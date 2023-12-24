@@ -1,4 +1,4 @@
-package com.hungnv28.core.dtos.user;
+package com.hungnv28.core.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

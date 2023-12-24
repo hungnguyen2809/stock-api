@@ -63,7 +63,7 @@ public class BaseController {
         BaseResponse response = new BaseResponse();
         response.setError(true);
         response.setMessage(message);
-        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.setStatus(HttpStatus.OK.value());
         return ResponseEntity.ok(response);
     }
 
@@ -72,7 +72,7 @@ public class BaseController {
         response.setError(true);
         response.setCode(code);
         response.setMessage(message);
-        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.setStatus(HttpStatus.OK.value());
         return ResponseEntity.ok(response);
     }
 

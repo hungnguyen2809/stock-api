@@ -1,9 +1,9 @@
 package com.hungnv28.core.daos.impl;
 
 import com.hungnv28.core.base.BaseDAO;
-import com.hungnv28.core.dtos.auth.SignUpRequestDTO;
+import com.hungnv28.core.controllers.request.SignUpRequest;
 import com.hungnv28.core.daos.UserDAO;
-import com.hungnv28.core.dtos.user.UserInfoDTO;
+import com.hungnv28.core.dtos.UserInfoDTO;
 import com.hungnv28.core.enums.RoleUser;
 import com.hungnv28.core.exception.ApiException;
 import com.hungnv28.core.utils.DateTimeFormatterUtil;
@@ -57,7 +57,7 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
             return !usersList.isEmpty() ? usersList.get(0) : null;
         } catch (Exception e) {
             log.error("UserDAO_loginUser: {}", e.getMessage());
-            throw new ApiException(e.getMessage());
+            throw new ApiException(e);
         }
     }
 
@@ -71,12 +71,12 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
             return query.getResultList().isEmpty();
         } catch (Exception e) {
             log.error("UserDAO_checkUser: {}", e.getMessage());
-            throw new ApiException(e.getMessage());
+            throw new ApiException(e);
         }
     }
 
     @Override
-    public boolean registerUser(SignUpRequestDTO data) throws Exception {
+    public boolean registerUser(SignUpRequest data) throws Exception {
         try {
             String role = StringUtils.isEmpty(data.getRole()) ? RoleUser.USER.getValue() : data.getRole();
             String dateOfBrith = DateTimeFormatterUtil.parseDate(data.getDateOfBrith(), DateTimeFormatterUtil.DDMMYYYY)
@@ -97,7 +97,7 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
             return !query.getResultList().isEmpty();
         } catch (Exception e) {
             log.error("UserDAO_registerUser: {}", e.getMessage());
-            throw new ApiException(e.getMessage());
+            throw new ApiException(e);
         }
     }
 
@@ -131,7 +131,7 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
             return !usersList.isEmpty() ? usersList.get(0) : null;
         } catch (Exception e) {
             log.error("UserDAO_findUserById: {}", e.getMessage());
-            throw new ApiException(e.getMessage());
+            throw new ApiException(e);
         }
     }
 }

@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 @NoArgsConstructor
 public class ApiException extends Exception {
     protected String code;
-    protected String stack;
     protected String message;
     protected HttpStatus status;
 
@@ -32,4 +31,13 @@ public class ApiException extends Exception {
         this.status = status;
     }
 
+    public ApiException(Exception exception) {
+        this.status = HttpStatus.OK;
+        this.message = exception.getMessage();
+
+        if (exception instanceof ApiException) {
+            this.code = ((ApiException) exception).getCode();
+            this.status = ((ApiException) exception).getStatus();
+        }
+    }
 }
