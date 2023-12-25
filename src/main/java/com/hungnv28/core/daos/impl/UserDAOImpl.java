@@ -6,7 +6,7 @@ import com.hungnv28.core.daos.UserDAO;
 import com.hungnv28.core.dtos.UserInfoDTO;
 import com.hungnv28.core.enums.RoleUser;
 import com.hungnv28.core.exception.ApiException;
-import com.hungnv28.core.utils.DateTimeFormatterUtil;
+import com.hungnv28.core.utils.DateTimeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -39,7 +39,7 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
             List<UserInfoDTO> usersList = new ArrayList<>();
 
             for (Object[] object : resultList) {
-                String dateOfBrith = DateTimeFormatterUtil.formatTimestamp((Timestamp) object[6], DateTimeFormatterUtil.DDMMYYYY);
+                String dateOfBrith = DateTimeUtils.formatTimestamp((Timestamp) object[6], DateTimeUtils.DDMMYYYY);
 
                 UserInfoDTO user = new UserInfoDTO();
                 user.setUserId((Integer) object[0]);
@@ -79,8 +79,8 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
     public boolean registerUser(SignUpRequest data) throws Exception {
         try {
             String role = StringUtils.isEmpty(data.getRole()) ? RoleUser.USER.getValue() : data.getRole();
-            String dateOfBrith = DateTimeFormatterUtil.parseDate(data.getDateOfBrith(), DateTimeFormatterUtil.DDMMYYYY)
-                    .format(DateTimeFormatterUtil.YYYYMMDD);
+            String dateOfBrith = DateTimeUtils.parseDate(data.getDateOfBrith(), DateTimeUtils.DDMMYYYY)
+                    .format(DateTimeUtils.YYYYMMDD);
 
             Session session = getSession(sessionFactory);
             NativeQuery query = session.createNativeQuery("CALL ERD_STOCK.REGISTER_USER(:username, :password, :fullName, :email, " +
@@ -113,7 +113,7 @@ public class UserDAOImpl extends BaseDAO implements UserDAO {
             List<UserInfoDTO> usersList = new ArrayList<>();
 
             for (Object[] object : resultList) {
-                String dateOfBrith = DateTimeFormatterUtil.formatTimestamp((Timestamp) object[6], DateTimeFormatterUtil.DDMMYYYY);
+                String dateOfBrith = DateTimeUtils.formatTimestamp((Timestamp) object[6], DateTimeUtils.DDMMYYYY);
 
                 UserInfoDTO user = new UserInfoDTO();
                 user.setUserId((Integer) object[0]);

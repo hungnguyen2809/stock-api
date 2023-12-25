@@ -19,7 +19,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class StockDAOIml extends BaseDAO implements StockDAO {
+public class StockDAOImpl extends BaseDAO implements StockDAO {
 
     @Qualifier("coreFactory")
     private final SessionFactory sessionFactory;
