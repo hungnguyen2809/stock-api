@@ -20,7 +20,6 @@ public class QuotesController extends BaseController {
 
     private final QuotesService quotesService;
 
-
     @GetMapping(value = "/historical/{stockId}")
     public ResponseEntity<BaseResponse> getHistorical(@PathVariable String stockId, @RequestParam String fromDate, @RequestParam String toDate) {
         try {

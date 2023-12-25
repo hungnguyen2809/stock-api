@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 
@@ -60,6 +61,10 @@ public class GlobalExceptionHandler {
             response.setCode(CodeException.SERVER_ERROR.getValue());
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             response.setMessage(message.toString());
+        } else if (exception instanceof NoResourceFoundException) {
+            response.setCode(CodeException.NOT_FOUND.getValue());
+            response.setStatus(HttpStatus.NOT_FOUND.value());
+            response.setMessage("Đường dẫn không hợp lệ. Vui lòng kiểm tra lại");
         } else {
             response.setCode(CodeException.SERVER_ERROR.getValue());
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());

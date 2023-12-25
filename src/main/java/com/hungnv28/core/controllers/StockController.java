@@ -32,10 +32,10 @@ public class StockController extends BaseController {
             List<StockInfoDTO> lisStock = stockService.watchList(getCurrentUser().getUserId());
             return successApi(lisStock);
         } catch (ApiException exception) {
-            log.error("UserController_getUserById: {}", exception.getMessage());
+            log.error("StockController_watchList: {}", exception.getMessage());
             return errorApi(new ErrorResponse(exception));
         } catch (Exception exception) {
-            log.error("UserController_getUserById: {}", exception.getMessage());
+            log.error("StockController_watchList: {}", exception.getMessage());
             return errorApi(exception.getMessage());
         }
     }
@@ -51,10 +51,10 @@ public class StockController extends BaseController {
                 return errorApi("Thêm không thành công");
             }
         } catch (ApiException exception) {
-            log.error("UserController_addWatchList: {}", exception.getMessage());
+            log.error("StockController_addWatch: {}", exception.getMessage());
             return errorApi(new ErrorResponse(exception));
         } catch (Exception exception) {
-            log.error("UserController_addWatchList: {}", exception.getMessage());
+            log.error("StockController_addWatch: {}", exception.getMessage());
             return errorApi(exception.getMessage());
         }
     }

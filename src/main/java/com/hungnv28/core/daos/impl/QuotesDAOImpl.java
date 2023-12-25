@@ -50,6 +50,7 @@ public class QuotesDAOImpl extends BaseDAO implements QuotesDAO {
 
             return dtoList;
         } catch (Exception e) {
+            log.error("QuotesDAO_getHistorical {}", e.getMessage());
             throw new ApiException(e);
         }
     }

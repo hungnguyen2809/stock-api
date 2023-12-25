@@ -72,16 +72,23 @@ public class StockDAOImpl extends BaseDAO implements StockDAO {
     }
 
     @Override
-    public boolean addWatchList(long userId, int stockId) throws Exception {
+    public boolean isExistsStock(int stockId) throws Exception {
         try {
             Session session = getSession(sessionFactory);
-
             NativeQuery queryCheckStock = session.createNativeQuery("SELECT COUNT(1) FROM STOCKS WHERE STOCK_ID = :stockId", Object.class)
                     .setParameter("stockId", stockId);
 
-            if (((Number) queryCheckStock.getSingleResult()).intValue() == 0) {
-                throw new ApiException("Chứng khoán này không tồn tại", "not_exists_stock");
-            }
+            return ((Number) queryCheckStock.getSingleResult()).intValue() > 0;
+        } catch (Exception e) {
+            log.error("StockDAO_checkStock: {}", e.getMessage());
+            throw new ApiException(e);
+        }
+    }
+
+    @Override
+    public boolean addWatchList(long userId, int stockId) throws Exception {
+        try {
+            Session session = getSession(sessionFactory);
 
             NativeQuery queryCheckExists = session.createNativeQuery("SELECT COUNT(1) FROM WATCH_LISTS WHERE STOCK_ID = :stockId AND USER_ID = :userId", Object.class)
                     .setParameter("userId", userId)
