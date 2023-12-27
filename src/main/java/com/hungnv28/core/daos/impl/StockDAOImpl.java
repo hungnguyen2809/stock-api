@@ -2,8 +2,10 @@ package com.hungnv28.core.daos.impl;
 
 import com.hungnv28.core.base.BaseDAO;
 import com.hungnv28.core.daos.StockDAO;
+import com.hungnv28.core.dtos.CoveredWarrantDTO;
 import com.hungnv28.core.dtos.StockInfoDTO;
 import com.hungnv28.core.exception.ApiException;
+import com.hungnv28.core.utils.DateTimeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,6 +108,35 @@ public class StockDAOImpl extends BaseDAO implements StockDAO {
             return queryInsert.executeUpdate() > 0;
         } catch (Exception e) {
             log.error("StockDAO_addWatchList: {}", e.getMessage());
+            throw new ApiException(e);
+        }
+    }
+
+    @Override
+    public List<CoveredWarrantDTO> listWarrant(int stockId) throws Exception {
+        try {
+            Session session = getSession(sessionFactory);
+            NativeQuery query = session.createNativeQuery("SELECT WARRANT_ID, NAME, ISSUE_DATE, EXPIRATION_DATE, PRICE_STRIKE, WARRANT_TYPE\n" +
+                            "FROM COVERED_WARRANTS WHERE UNDERLYING_ASSET_ID = :stockId", Object.class)
+                    .setParameter("stockId", stockId);
+
+            List<Object[]> resultList = query.getResultList();
+            List<CoveredWarrantDTO> dtoList = new ArrayList<>();
+
+            for (Object[] object : resultList) {
+                CoveredWarrantDTO stock = new CoveredWarrantDTO();
+                stock.setWarrantId((int) object[0]);
+                stock.setWarrantName((String) object[1]);
+                stock.setIssueDate(DateTimeUtils.formatTimestamp((Timestamp) object[2], DateTimeUtils.DDMMYYYY));
+                stock.setExpDate(DateTimeUtils.formatTimestamp((Timestamp) object[3], DateTimeUtils.DDMMYYYY));
+                stock.setPriceStrike((BigDecimal) object[4]);
+                stock.setWarrantType((String) object[5]);
+                dtoList.add(stock);
+            }
+
+            return dtoList;
+        } catch (Exception e) {
+            log.error("StockDAO_listWarrant: {}", e.getMessage());
             throw new ApiException(e);
         }
     }

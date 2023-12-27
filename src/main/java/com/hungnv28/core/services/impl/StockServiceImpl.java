@@ -1,9 +1,11 @@
 package com.hungnv28.core.services.impl;
 
 import com.hungnv28.core.daos.StockDAO;
+import com.hungnv28.core.dtos.CoveredWarrantDTO;
 import com.hungnv28.core.dtos.StockInfoDTO;
 import com.hungnv28.core.exception.ApiException;
 import com.hungnv28.core.services.StockService;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,5 +30,10 @@ public class StockServiceImpl implements StockService {
         }
 
         return stockDAO.addWatchList(userId, stockId);
+    }
+
+    @Override
+    public List<CoveredWarrantDTO> listWarrant(int stockId) throws Exception {
+        return stockDAO.listWarrant(stockId);
     }
 }

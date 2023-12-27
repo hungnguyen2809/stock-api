@@ -3,6 +3,7 @@ package com.hungnv28.core.controllers;
 import com.hungnv28.core.base.BaseController;
 import com.hungnv28.core.base.BaseResponse;
 import com.hungnv28.core.controllers.request.StockAddWatchRequest;
+import com.hungnv28.core.dtos.CoveredWarrantDTO;
 import com.hungnv28.core.dtos.StockInfoDTO;
 import com.hungnv28.core.exception.ApiException;
 import com.hungnv28.core.exception.ErrorResponse;
@@ -55,6 +56,21 @@ public class StockController extends BaseController {
             return errorApi(new ErrorResponse(exception));
         } catch (Exception exception) {
             log.error("StockController_addWatch: {}", exception.getMessage());
+            return errorApi(exception.getMessage());
+        }
+    }
+
+    @GetMapping(value = "/covered-warrant")
+    @Operation(summary = "Lấy danh sách chứng quyền đảm bảo")
+    public ResponseEntity<BaseResponse> listWarrant(@RequestParam int stockId) {
+        try {
+            List<CoveredWarrantDTO> lisStock = stockService.listWarrant(stockId);
+            return successApi(lisStock);
+        } catch (ApiException exception) {
+            log.error("StockController_listWarrant: {}", exception.getMessage());
+            return errorApi(new ErrorResponse(exception));
+        } catch (Exception exception) {
+            log.error("StockController_listWarrant: {}", exception.getMessage());
             return errorApi(exception.getMessage());
         }
     }
